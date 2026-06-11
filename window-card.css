@@ -1,0 +1,39 @@
+/* Solid 3D Window Card Component with Added Top Inset Shadow */
+.window-3d-card {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #1e293b; /* Slate 800 frame border */
+  border-radius: 12px;
+  display: inline-block; /* Forces card wrapper to hug the growing text area snugly */
+  box-sizing: border-box;
+  transition: all 0.1s ease-out;
+  
+  /* Modified 3D Shadow Stack:
+     Includes a soft internal top-edge shadow layer combined with the solid bottom slab */
+  box-shadow: 
+    /* Soft ambient internal shadow bleeding down from the top edge */
+    inset 0 6px 8px -4px rgba(30, 41, 59, 0.25),
+    /* Your original solid 3D block shadow depth */
+    1px 1px 0px #1e293b,
+    2px 2px 0px #1e293b,
+    3px 3px 0px #1e293b,
+    4px 4px 0px #1e293b,
+    5px 5px 0px #1e293b,
+    6px 6px 0px #1e293b,
+    7px 7px 0px #1e293b,
+    8px 8px 0px #1e293b;
+}
+
+/* Interactive press animation when actively editing */
+.window-3d-card:focus-within {
+  transform: translate(2px, 2px);
+  box-shadow: 
+    /* Maintains a tighter inset top shadow when pressed down */
+    inset 0 4px 6px -3px rgba(30, 41, 59, 0.3),
+    1px 1px 0px #1e293b,
+    2px 2px 0px #1e293b,
+    3px 3px 0px #1e293b,
+    4px 4px 0px #1e293b,
+    5px 5px 0px #1e293b,
+    6px 6px 0px #1e293b;
+}
