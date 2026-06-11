@@ -1,5 +1,7 @@
 /* Solid 3D Window Card Component with Top & Left Shadow */
 .window-3d-card {
+  z-index: 5;
+  pointer-events: auto;
   position: absolute;
   /* Start perfectly dead-centered in the middle of your screen */
   left: calc(50% - (160px / 2)); 

@@ -1,69 +1,79 @@
 document.addEventListener("DOMContentLoaded", () => {
   const textarea = document.getElementById("process-textarea");
-  const card = document.getElementById("main-process-card");
+  const card     = document.getElementById("main-process-card");
 
-  if (textarea && card) {
-    textarea.focus();
+  if (!textarea || !card) return;
 
-    // Track the historical peak width of our bounding text box
-    let historicalMaxWidth = 220;
+  // --- WIDTH EXPANSION ENGINE (mirror-based) ---
+  let historicalMaxWidth = 220;
 
-    // 1. CREATE A HIDDEN MIRROR ELEMENT TO PARSE EXACT BROWSER LAYOUT METRICS
-    const mirror = document.createElement("div");
-    
-    // Mirror must perfectly duplicate the font rendering specs of the textarea
-    mirror.style.position = "absolute";
-    mirror.style.visibility = "hidden";
-    mirror.style.height = "0";
-    mirror.style.overflow = "hidden";
-    mirror.style.whiteSpace = "pre";
-    mirror.style.fontFamily = "sans-serif";
-    mirror.style.fontSize = "16px";
-    mirror.style.fontWeight = "700";
-    mirror.style.letterSpacing = "normal";
-    
-    document.body.appendChild(mirror);
+  const mirror = document.createElement("div");
+  mirror.style.position      = "absolute";
+  mirror.style.visibility    = "hidden";
+  mirror.style.height        = "0";
+  mirror.style.overflow      = "hidden";
+  mirror.style.whiteSpace    = "pre";
+  mirror.style.fontFamily    = "sans-serif";
+  mirror.style.fontSize      = "16px";
+  mirror.style.fontWeight    = "700";
+  mirror.style.letterSpacing = "normal";
+  document.body.appendChild(mirror);
 
-    const lockWidthToTrueLayout = () => {
-      const lines = textarea.value.split("\n");
-      let longestLinePixelWidth = 0;
+  const lockWidthToTrueLayout = () => {
+    const lines = textarea.value.split("\n");
+    let longestLinePixelWidth = 0;
 
-      // 2. MEASURE EACH INDIVIDUAL LINE IN THE ACTIVE BROWSER VIEWPORT
-      lines.forEach(line => {
-        // Fallback to a space character to preserve trailing newlines accurately
-        mirror.textContent = line === "" ? " " : line;
-        
-        // Read the true physical layout footprint calculated by the browser
-        const currentLineWidth = mirror.offsetWidth;
-        if (currentLineWidth > longestLinePixelWidth) {
-          longestLinePixelWidth = currentLineWidth;
-        }
-      });
+    lines.forEach(line => {
+      mirror.textContent = line === "" ? " " : line;
+      const w = mirror.offsetWidth;
+      if (w > longestLinePixelWidth) longestLinePixelWidth = w;
+    });
 
-      // Add a 45px safety buffer to ensure the text cursor has clear breathing room on the right
-      const currentMaxNeeded = longestLinePixelWidth + 45;
+    const currentMaxNeeded = longestLinePixelWidth + 45;
+    historicalMaxWidth = currentMaxNeeded > historicalMaxWidth
+      ? currentMaxNeeded
+      : Math.max(220, currentMaxNeeded);
 
-      // 3. ONE-WAY EXPANSION RATCHET
-      if (currentMaxNeeded > historicalMaxWidth) {
-        historicalMaxWidth = currentMaxNeeded;
-      } else {
-        // Fallback structural safety minimum floor limit
-        historicalMaxWidth = Math.max(220, currentMaxNeeded);
-      }
+    textarea.style.width  = `${historicalMaxWidth}px`;
+    card.style.width      = `${historicalMaxWidth + 32}px`;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
-      // 4. DESIGNATE COORDINATE GEOMETRY VALUES
-      textarea.style.width = `${historicalMaxWidth}px`;
-      card.style.width = `${historicalMaxWidth + 32}px`; // Factoring card padding
+  lockWidthToTrueLayout();
+  textarea.addEventListener("input", lockWidthToTrueLayout);
 
-      // 5. AUTO-MANAGE DYNAMIC TRACK HEIGHT
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    };
+  // --- RE-ARM: clicking anywhere on the card focuses the textarea ---
+  card.addEventListener("mousedown", (event) => {
+    if (document.activeElement !== textarea) {
+      event.preventDefault();
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+  });
 
-    // Run baseline check on load
-    lockWidthToTrueLayout();
+  // --- MOVEMENT ENGINE ---
+  document.addEventListener("mousedown", (event) => {
+    // Ignore clicks inside own card
+    if (card.contains(event.target)) return;
 
-    // Listen to real-time keystroke alterations
-    textarea.addEventListener("input", lockWidthToTrueLayout);
-  }
+    // Ignore clicks inside any other card on the canvas
+    if (event.target.closest(".window-3d-card")) return;
+
+    // Only move if this card's textarea is focused
+    if (document.activeElement !== textarea) return;
+
+    event.preventDefault();
+
+    // Dynamically target the shared level canvas or the standalone parent layout container
+    const canvasEl   = document.querySelector(".level-canvas") || card.offsetParent || document.documentElement;
+    const canvasRect = canvasEl.getBoundingClientRect();
+    const targetX    = event.clientX - canvasRect.left - (card.offsetWidth  / 2);
+    const targetY    = event.clientY - canvasRect.top  - (card.offsetHeight / 2);
+
+    card.style.left = `${targetX}px`;
+    card.style.top  = `${targetY}px`;
+
+    textarea.blur();
+  });
 });
