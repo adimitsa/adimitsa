@@ -1,11 +1,12 @@
-/* Layout Center Container Wrapper */
+/* Layout Canvas Area - Set to relative to manage spatial targets */
 .textarea-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem; /* Room for top/left shadow extrusion */
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding: 5rem;
   box-sizing: border-box;
+  overflow: hidden;
+  cursor: crosshair; /* Visual cue that clicking changes layout position */
 }
 
 /* Infinite Horizontal Auto-Expanding Text Window */
@@ -23,8 +24,7 @@
   outline: none;
   text-align: center;
   caret-color: #4f46e5;
-
-  /* Disables auto-breaking/wrapping on lines */
   white-space: pre;
   word-wrap: normal;
+  cursor: text; /* Preserves normal text typing cursor inside */
 }
