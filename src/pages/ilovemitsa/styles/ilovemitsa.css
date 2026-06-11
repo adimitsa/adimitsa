@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* ── Design tokens ──────────────────────────────────────────────── */
+@theme {
+  /* Brand */
+  --color-canvas-bg: #ffffff;
+  --color-canvas-dot: #d1d5db;
+  --color-canvas-dot-major: #9ca3af;
+
+  /* UI chrome */
+  --color-ui-bg: #f9fafb;
+  --color-ui-border: #e5e7eb;
+  --color-ui-text: #111827;
+  --color-ui-muted: #6b7280;
+
+  /* Accent — easily swappable */
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+
+  /* Spacing scale additions */
+  --spacing-canvas-toolbar: 3rem;
+}
+
+/* ── Base reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;         /* canvas handles its own scroll */
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-canvas-bg);
+  color: var(--color-ui-text);
+}
