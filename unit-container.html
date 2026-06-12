@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space-Optimized Bin Packer</title>
+
+  <link rel="stylesheet" href="textarea.css">
+  <link rel="stylesheet" href="window-card.css">
+  <link rel="stylesheet" href="unit-container.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    html, body { background-color: #f1f5f9 !important; }
+  </style>
+</head>
+<body class="p-12 m-0 min-h-screen font-sans select-none">
+
+  <div class="max-w-xl mb-6">
+    <h1 class="text-xl font-bold text-slate-800 mb-1">Ultra-Compact Bin Packing Container</h1>
+    <p class="text-sm text-slate-500">Uses a 2D sorting tree to nest and group elements close together. Click the <b>+ Button</b> to watch cards pack into the tightest layout orientation.</p>
+  </div>
+
+  <div class="unit-master-container" id="unit-container">
+    
+    <div id="container-card-flow"></div>
+
+    <button class="container-append-trigger-btn" id="add-new-card-btn" type="button" title="Generate tight packed unit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+    
+  </div>
+
+  <script src="textarea.js"></script>
+  <script src="unit-container.js"></script>
+</body>
+</html>

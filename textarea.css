@@ -1,4 +1,4 @@
-/* Keep this exactly how it was originally written */
+/* Full-canvas movement layer for the window-card */
 .textarea-container {
   position: absolute;
   inset: 0;
@@ -6,9 +6,13 @@
   cursor: crosshair;
 }
 
+/* Proportional dynamic text field configuration.
+  Removed hardcoded min-width and min-height limits 
+  so it can collapse entirely down to a single character footprint.
+*/
 .auto-textarea {
-  min-width: 160px;
-  min-height: 48px;
+  width: auto;
+  height: auto;
   resize: none;
   overflow: hidden;
   box-sizing: border-box;
@@ -23,4 +27,8 @@
   white-space: pre;
   word-wrap: normal;
   cursor: text;
+  display: block;
+  
+  /* Compact baseline padding to wrap letters tightly */
+  padding: 8px 12px; 
 }
