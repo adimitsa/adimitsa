@@ -7,8 +7,8 @@
 }
 
 /* Proportional dynamic text field configuration.
-  Removed hardcoded min-width and min-height limits 
-  so it can collapse entirely down to a single character footprint.
+   All artificial min-width and min-height limits are removed
+   so it can shrink down completely to a single character.
 */
 .auto-textarea {
   width: auto;
@@ -29,6 +29,6 @@
   cursor: text;
   display: block;
   
-  /* Compact baseline padding to wrap letters tightly */
+  /* Tightly wrap input values */
   padding: 8px 12px; 
 }

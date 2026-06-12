@@ -1,42 +1,39 @@
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("unit-container");
-  const cardFlow = document.getElementById("container-card-flow");
+  const cardFlow  = document.getElementById("container-card-flow");
   const addButton = document.getElementById("add-new-card-btn");
 
   if (!container || !cardFlow || !addButton) return;
 
   let cardCount = 0;
 
-  // --- 2D BIN-PACKING TREE GEOMETRY ENGINE ---
+  // --- SPACE-OPTIMIZED BIN PACKING ENGINE ---
   const arrangeAndPackContainerTightly = () => {
     const cards = Array.from(cardFlow.querySelectorAll(".window-3d-card"));
     
     if (cards.length === 0) {
-      container.style.width = "200px";
-      container.style.height = "100px";
+      container.style.width = "220px";
+      container.style.height = "120px";
       return;
     }
 
-    // Geometry parameters: Padding from outer box edge and separating gap size
     const INTERNAL_PADDING = 24; 
     const SEPARATOR_GAP = 16;   
 
-    // Step 1: Map dimensions and sort elements from biggest area footprint to smallest
+    // Map geometric bounding footprints
     const layoutItems = cards.map((card) => {
       return {
         element: card,
-        w: (card.offsetWidth || 184) + SEPARATOR_GAP,
-        h: (card.offsetHeight || 80) + SEPARATOR_GAP,
-        area: ((card.offsetWidth || 184) + SEPARATOR_GAP) * ((card.offsetHeight || 80) + SEPARATOR_GAP)
+        w: (card.offsetWidth || 40) + SEPARATOR_GAP,
+        h: (card.offsetHeight || 32) + SEPARATOR_GAP,
+        area: (card.offsetWidth || 40) * (card.offsetHeight || 32)
       };
     });
 
-    // Sort items descending to build a highly optimized packing layout tree
+    // Sort items by size to create an optimal 2D packing tree layout
     layoutItems.sort((a, b) => b.area - a.area);
 
-    // Step 2: Initialize tree node mesh roots
-    // Start with a large initial boundary workspace width proxy that expands dynamically
-    let blockWorkspaceWidth = 650; 
+    let blockWorkspaceWidth = 600; 
     let packingTreeRootNode = { x: 0, y: 0, w: blockWorkspaceWidth, h: 5000 };
 
     const searchTreeToInsertItem = (node, itemW, itemH) => {
@@ -44,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return searchTreeToInsertItem(node.rightChild, itemW, itemH) || 
                searchTreeToInsertItem(node.bottomChild, itemW, itemH);
       } else if (itemW <= node.w && itemH <= node.h) {
-        // Create child branch tracks split along element dimensions
         node.isUsed = true;
         node.bottomChild = { x: node.x, y: node.y + itemH, w: node.w, h: node.h - itemH };
         node.rightChild  = { x: node.x + itemW, y: node.y, w: node.w - itemW, h: itemH };
@@ -56,19 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let extremeOuterBoundX = 0;
     let extremeOuterBoundY = 0;
 
-    // Step 3: Loop items over spatial coordinate trees
     layoutItems.forEach((item) => {
       let fitCoordinateNode = searchTreeToInsertItem(packingTreeRootNode, item.w, item.h);
       
       if (fitCoordinateNode) {
-        // Commit coordinate transforms relative to the box layout structure
         const finalLeftX = fitCoordinateNode.x + INTERNAL_PADDING;
         const finalTopY  = fitCoordinateNode.y + INTERNAL_PADDING;
 
         item.element.style.left = `${finalLeftX}px`;
         item.element.style.top  = `${finalTopY}px`;
 
-        // Calculate maximum dimensions used by items minus empty trailing gap separations
         if (fitCoordinateNode.x + item.w - SEPARATOR_GAP > extremeOuterBoundX) {
           extremeOuterBoundX = fitCoordinateNode.x + item.w - SEPARATOR_GAP;
         }
@@ -78,56 +71,61 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Step 4: Shrink container borders tightly against elements (plus padding cushion)
     const packedWidthTarget  = extremeOuterBoundX + (INTERNAL_PADDING * 2);
     const packedHeightTarget = extremeOuterBoundY + (INTERNAL_PADDING * 2);
 
-    container.style.width  = `${Math.max(200, packedWidthTarget)}px`;
+    container.style.width  = `${Math.max(220, packedWidthTarget)}px`;
     container.style.height = `${Math.max(120, packedHeightTarget)}px`;
   };
 
-  // --- DYNAMIC CARD CREATION FLOW ---
+  // --- DYNAMIC CARD GENERATOR DOCK FLOW ---
   addButton.addEventListener("click", () => {
     cardCount++;
 
+    // 1. Structural window-card frame creation
     const newCard = document.createElement("div");
-    newCard.className = "window-3d-card pt-2 pb-1 px-2";
+    newCard.className = "window-3d-card p-0";
     
+    // 2. Proportional auto-textarea input creation
     const newTextarea = document.createElement("textarea");
     newTextarea.id = `unit-textarea-${cardCount}`;
-    
-    // Vary placeholder lengths slightly to test dynamic packing adjustments
-    const variations = [
-      "Task track logs",
-      "Process optimization node vector",
-      "Core unit shell tracking logic parameters",
-      "Alpha profile",
-      "Database schema query track cluster layout"
-    ];
-    newTextarea.placeholder = variations[cardCount % variations.length];
-    newTextarea.className = "auto-textarea px-4 pt-3 pb-1 text-slate-900";
+    newTextarea.placeholder = "Functional unit";
+    newTextarea.className = "auto-textarea text-slate-900";
+    newTextarea.rows = 1;
 
     newCard.appendChild(newTextarea);
     cardFlow.appendChild(newCard);
 
-    // Native size sync routine matching textarea size properties
-    const matchContentSize = () => {
-      newTextarea.style.width  = "40px";
-      newTextarea.style.height = "auto";
+    // Initial proportional measurement pass
+    if (typeof window.syncTextareaProportionalSize === "function") {
+      window.syncTextareaProportionalSize(newTextarea);
+    }
 
-      const targetWidth  = Math.max(160, newTextarea.scrollWidth + 24);
-      const targetHeight = Math.max(48,  newTextarea.scrollHeight);
-
-      newTextarea.style.width  = `${targetWidth}px`;
-      newTextarea.style.height = `${targetHeight}px`;
-    };
-
-    matchContentSize();
-    
+    // 3. Bind uniform sizing events identical to standalone components
     newTextarea.addEventListener("input", () => {
-      matchContentSize();
-      // Instantly recalculate the 2D layout tree as typing updates card boundaries
+      window.syncTextareaProportionalSize(newTextarea);
+      // Let the box size settle, then instantly update container boundaries
       setTimeout(arrangeAndPackContainerTightly, 10);
+    });
+
+    newCard.addEventListener("mousedown", (event) => {
+      // Toggle the text reduction state globally on first click
+      if (!window.hasBeenClickedToTypeGlobal) {
+        window.hasBeenClickedToTypeGlobal = true;
+        
+        // Resize all textareas inside the container instantly to reflect the text reduction rule
+        const allContainedTextareas = cardFlow.querySelectorAll(".auto-textarea");
+        allContainedTextareas.forEach(el => window.syncTextareaProportionalSize(el));
+      } else {
+        window.syncTextareaProportionalSize(newTextarea);
+      }
+
+      if (document.activeElement !== newTextarea) {
+        event.preventDefault();
+        newTextarea.focus();
+        newTextarea.setSelectionRange(newTextarea.value.length, newTextarea.value.length);
+      }
+      setTimeout(arrangeAndPackContainerTightly, 15);
     });
 
     newTextarea.focus();

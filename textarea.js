@@ -1,103 +1,106 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const textarea   = document.getElementById("dynamic-textarea");
-  const windowCard = document.querySelector(".window-3d-card");
-  const canvas     = windowCard ? windowCard.offsetParent : null;
+  // Global activation flag tracking across the workspace
+  window.hasBeenClickedToTypeGlobal = window.hasBeenClickedToTypeGlobal || false;
 
-  if (!textarea || !windowCard || !canvas) return;
+  // --- UNIVERSAL MIRROR-BASED SIZING CONTROLLER ---
+  // This function can be called on any textarea to size it perfectly relative to its text length
+  window.syncTextareaProportionalSize = (textarea) => {
+    if (!textarea) return;
+    
+    const windowCard = textarea.closest(".window-3d-card");
+    if (!windowCard) return;
 
-  // State to track if the initial user activation click has occurred
-  let hasBeenClickedToType = false;
-
-  // --- 1. PROPORTIONAL RESIZING MIRROR ENGINE ---
-  // Create an invisible mirror element that measures exact text metrics on the fly
-  const textMirror = document.createElement("div");
-  textMirror.style.position      = "absolute";
-  textMirror.style.visibility    = "hidden";
-  textMirror.style.height        = "0";
-  textMirror.style.overflow      = "hidden";
-  textMirror.style.whiteSpace    = "pre";
-  textMirror.style.fontFamily    = "sans-serif";
-  textMirror.style.fontSize      = "16px";
-  textMirror.style.lineHeight    = "1.3";
-  textMirror.style.padding       = "8px 12px"; // Must match text area padding exactly
-  document.body.appendChild(textMirror);
-
-  const resizeInputToExactContent = () => {
-    let textToMeasure = textarea.value;
-
-    // Before the first interaction check, calculate size using the placeholder text string
-    if (!hasBeenClickedToType && !textToMeasure) {
-      textToMeasure = textarea.placeholder || "";
+    // Create or reuse a single hidden global mirror element for ultra-precise text measurements
+    let mirror = document.getElementById("global-text-measurement-mirror");
+    if (!mirror) {
+      mirror = document.createElement("div");
+      mirror.id = "global-text-measurement-mirror";
+      mirror.style.position      = "absolute";
+      mirror.style.visibility    = "hidden";
+      mirror.style.height        = "0";
+      mirror.style.overflow      = "hidden";
+      mirror.style.whiteSpace    = "pre";
+      mirror.style.fontFamily    = "sans-serif";
+      mirror.style.fontSize      = "16px";
+      mirror.style.lineHeight    = "1.3";
+      mirror.style.padding       = "8px 12px"; // Must exactly match .auto-textarea padding
+      document.body.appendChild(mirror);
     }
 
-    // If active/clicked but empty, collapse down to show exactly 1 character width spacer
-    if (hasBeenClickedToType && !textToMeasure) {
+    let textToMeasure = textarea.value;
+
+    // Phase 1: Show full placeholder if it hasn't been clicked/activated yet
+    if (!window.hasBeenClickedToTypeGlobal && !textToMeasure) {
+      textToMeasure = textarea.placeholder || "Functional unit";
+    }
+
+    // Phase 2: Collapse immediately to fit exactly 1 character if activated but empty
+    if (window.hasBeenClickedToTypeGlobal && !textToMeasure) {
       textToMeasure = " "; 
     }
 
-    // Split text into individual rows to handle line breaks perfectly
+    // Measure line tracks to support vertical paragraph wrapping smoothly
     const lines = textToMeasure.split("\n");
-    let maximumLineWidthPixelOffset = 0;
+    let maximumLineWidth = 0;
 
     lines.forEach(line => {
-      textMirror.textContent = line === "" ? " " : line;
-      if (textMirror.offsetWidth > maximumLineWidthPixelOffset) {
-        maximumLineWidthPixelOffset = textMirror.offsetWidth;
+      mirror.textContent = line === "" ? " " : line;
+      if (mirror.offsetWidth > maximumLineWidth) {
+        maximumLineWidth = mirror.offsetWidth;
       }
     });
 
-    // Calculate exact proportional width needed
-    const calculatedWidth = maximumLineWidthPixelOffset;
-    
-    // Calculate exact vertical height using a fast, scrollHeight measure loop
-    textarea.style.width  = `${calculatedWidth}px`;
+    // Apply pixel dimensions directly to the textarea
+    textarea.style.width = `${maximumLineWidth}px`;
     textarea.style.height = "auto";
     const calculatedHeight = textarea.scrollHeight;
     textarea.style.height = `${calculatedHeight}px`;
 
-    // Resize the outer 3D card shell cleanly around the input metrics (retaining shadows)
-    windowCard.style.width  = `${calculatedWidth}px`;
+    // Resize the outer 3D card shell cleanly around the input metrics
+    windowCard.style.width  = `${maximumLineWidth}px`;
     windowCard.style.height = `${calculatedHeight}px`;
   };
 
-  // Run baseline layout size calculation pass
-  resizeInputToExactContent();
-  textarea.addEventListener("input", resizeInputToExactContent);
+  // Bind behaviors to existing cards on initialization
+  const initialTextarea = document.getElementById("dynamic-textarea");
+  const initialCard     = document.querySelector(".window-3d-card");
 
-  // --- 2. ACTIVATION & FOCUS RE-ARM CIRCUIT ---
-  windowCard.addEventListener("mousedown", (event) => {
-    // Check if this is the first activation trigger step
-    if (!hasBeenClickedToType) {
-      hasBeenClickedToType = true;
-      // Shrink immediately down to 1-character size bounds
-      resizeInputToExactContent();
-    }
+  if (initialTextarea && initialCard) {
+    window.syncTextareaProportionalSize(initialTextarea);
 
-    if (document.activeElement !== textarea) {
+    initialTextarea.addEventListener("input", () => {
+      window.syncTextareaProportionalSize(initialTextarea);
+    });
+
+    initialCard.addEventListener("mousedown", (event) => {
+      if (!window.hasBeenClickedToTypeGlobal) {
+        window.hasBeenClickedToTypeGlobal = true;
+        window.syncTextareaProportionalSize(initialTextarea);
+      }
+
+      if (document.activeElement !== initialTextarea) {
+        event.preventDefault();
+        initialTextarea.focus();
+        initialTextarea.setSelectionRange(initialTextarea.value.length, initialTextarea.value.length);
+      }
+    });
+  }
+
+  // --- STANDALONE CANVAS Drag MOVEMENT ENGINE ---
+  const canvas = initialCard ? initialCard.offsetParent : null;
+  if (canvas) {
+    canvas.addEventListener("mousedown", (event) => {
+      if (initialCard.contains(event.target)) return;
+      if (event.target.closest(".unit-master-container, .window-3d-card")) return;
+      if (document.activeElement !== initialTextarea) return;
+
       event.preventDefault();
-      textarea.focus();
-      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-    }
-  });
+      const canvasRect = canvas.getBoundingClientRect();
+      const targetX    = event.clientX - canvasRect.left - (initialCard.offsetWidth  / 2);
+      const targetY    = event.clientY - canvasRect.top  - (initialCard.offsetHeight / 2);
 
-  // --- 3. MOVEMENT ENGINE CONTROLLER ---
-  canvas.addEventListener("mousedown", (event) => {
-    // Ignore clicks inside own card structure
-    if (windowCard.contains(event.target)) return;
-
-    // Ignore clicks inside any other interactive block components on screen
-    if (event.target.closest(".process-card, .window-3d-card")) return;
-
-    // Only allow drag movement shifts if this card is currently active and focused
-    if (document.activeElement !== textarea) return;
-
-    event.preventDefault();
-
-    const canvasRect = canvas.getBoundingClientRect();
-    const targetX    = event.clientX - canvasRect.left - (windowCard.offsetWidth  / 2);
-    const targetY    = event.clientY - canvasRect.top  - (windowCard.offsetHeight / 2);
-
-    windowCard.style.left = `${targetX}px`;
-    windowCard.style.top  = `${targetY}px`;
-  });
+      initialCard.style.left = `${targetX}px`;
+      initialCard.style.top  = `${targetY}px`;
+    });
+  }
 });
