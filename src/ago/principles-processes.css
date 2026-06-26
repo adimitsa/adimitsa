@@ -1,0 +1,24 @@
+/* Hide the element */
+.hidden {
+  display: none;
+}
+ 
+/* Optional: Style for the visible div */
+#principles-processes {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+
+  /* Sizing and Layout Constraints */
+  max-width: 300px;           /* Prevents the div from growing wider than 300px */
+  width: 100%;                /* Allows it to shrink smaller on tiny screens */
+  box-sizing: border-box;     /* Includes padding in the width calculation */
+  padding: 15px;              /* Adds breathing room inside the box */
+
+  /* Word Wrapping Fixes */
+  overflow-wrap: break-word;  /* Forces normal words to wrap at the max-width boundary */
+  word-break: break-word;
+  color:rgb(48, 46, 46);
+}

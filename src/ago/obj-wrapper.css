@@ -1,0 +1,6 @@
+.obj-wrapper {
+    display: inline-block;
+    position: relative;
+    direction: rtl;
+    align-self: flex-start;
+}

@@ -1,0 +1,11 @@
+.auto-resize-textarea {
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 50px;
+    min-width: 50px;
+    resize: none;
+    padding-right: 15px;
+    direction: ltr;
+    white-space: nowrap;
+    margin-bottom: 10px; /* Leaves clean clearing space for the absolute plus button below */
+}

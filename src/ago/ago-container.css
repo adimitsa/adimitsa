@@ -1,0 +1,12 @@
+#ago-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Modifier class: The final element does not need extra clearance spacing */
+.obj-wrapper.last-item .auto-resize-textarea {
+    margin-bottom: 0px; 
+}

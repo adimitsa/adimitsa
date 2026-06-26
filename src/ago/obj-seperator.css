@@ -1,0 +1,6 @@
+.obj-seperator {
+    font-size: 22px;
+    user-select: none;
+    align-self: flex-start;
+    margin-left: 15px;
+}
