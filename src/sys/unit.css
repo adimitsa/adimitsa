@@ -1,0 +1,18 @@
+.textarea {
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 50px;
+    min-width: 50px;
+    resize: none;
+    padding-right: 15px;
+    direction: ltr;
+    white-space: nowrap;
+    margin-bottom: 10px; /* Leaves clean clearing space for the absolute plus button below */
+}
+
+/* Style the placeholder directly on the textarea */
+.textarea::placeholder {
+  color: #888888 !important;   /* Clean, professional dark gray */
+  opacity: 0.7 !important;      /* Standard soft placeholder transparency */
+  visibility: visible !important;
+}

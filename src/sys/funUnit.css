@@ -1,0 +1,9 @@
+.funUnit {
+    display: inline-flex;
+    flex-direction: column;
+    border: 1px solid #9ab3a6;
+    border-radius: 4px;
+    padding: 4px;
+    background: #fff;
+    width: 300px;
+}

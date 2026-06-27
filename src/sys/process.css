@@ -1,0 +1,35 @@
+.process.draggable {
+  position: absolute;
+  
+  /* 2. Map the absolute positions to your React CSS variables */
+  left: var(--x);
+  top: var(--y);
+  
+  z-index: 1000;
+  user-select: none;
+  cursor: grab;
+  
+  /* Layout configurations */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+}
+
+/* Dynamic active drag cursor state switch */
+.process.draggable.dragging {
+  cursor: grabbing;
+}
+
+/* Sticked sub-elements layout rules */
+.fun-units-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+}
+
+.process .funUnit {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
