@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef} from 'react';
 import FunUnit from './funUnit';
 import Unit from './unit';
 import Process from './process';
@@ -15,9 +15,9 @@ export default function Sys() {
   const [processes , setProcesses] = useState(new Map());
   const [connections, setConnections] = useState(new Map());
   const [points, setPoints] = useState(new Map());
-const [renderTrigger, setRenderTrigger] = useState(0);
+  const [renderTrigger, setRenderTrigger] = useState(0);
 
-  var divToMoveId = '';
+  const divToMoveId = useRef('');
 
   const canvasDiv = document.getElementById('canvas');
 
@@ -31,29 +31,29 @@ const [renderTrigger, setRenderTrigger] = useState(0);
     }
 
       function divMove(x,y){
-        if (divToMoveId !== '') {
-        var div = document.getElementById(divToMoveId);
-        const rect = div.getBoundingClientRect();
-        updatePoint(divToMoveId, [x+(rect.width / 2),y])
+        var div = document.getElementById(divToMoveId.current);
+        // const rect = div.getBoundingClientRect();
         div.style.top = y + 'px';
         div.style.left = x + 'px';
-        }
+        
 
         // canvasDiv.style.width = document.documentElement.scrollWidth + 'px';
         //         canvasDiv.style.height = document.documentElement.scrollHeight + 'px';
     }
 
-      function updateFunUnitPositions(processId) {
+      function updateFunUnitPositions() {
+        var processId = String(divToMoveId.current);
+        console.log('Updating positions for processId:', processId);
         if (processId === '') {
           return;
-        } 
-        var processItem = processes[processId];
-                console.log(processId, processItem);
+        }
+        var processItem = processes.get(String(processId));
+        console.log('Updating positions for process:', processItem);
         var fu1Id = processItem.fu1Id;
-        var fu12d = processItem.fu12d;
-        updatePoint(fu1Id, getElementPageCoords(fu1Id, anchor='bottom-center'));
-        updatePoint(fu12d, getElementPageCoords(fu2Id, anchor='bottom-center'));
-
+        var fu2Id = processItem.fu2Id;
+        
+        updatePoint(fu1Id, getElementPageCoords(fu1Id, 'bottom-center'));
+        updatePoint(fu2Id, getElementPageCoords(fu2Id, 'bottom-center'));
     }
 
     function checkIfConnectionExist(k) {
@@ -72,7 +72,7 @@ const addConnection = (key, value) => {
 };
 
   const updatePoint = (key, newValue) => {
-    console.log('updateing piont' + key, newValue);
+    console.log('updating point ' + key + ':', newValue);
   setPoints(prevPoints => {
     // 1. Create a new Map instance copying the old entries
     const newMap = new Map(prevPoints);
@@ -81,7 +81,6 @@ const addConnection = (key, value) => {
     // 3. Return the new map to update state
     return newMap;
   });
-    setRenderTrigger(prev => prev + 1);
   };
 
   const addFunUnit = (id) => {
@@ -145,8 +144,8 @@ const addProcess = (id) => {
     // Only trigger if the empty space or border itself is clicked
     if (event.target === event.currentTarget) {
       const id = event.currentTarget.id;
-      divToMoveId = String(id);
-
+      divToMoveId.current = String(id);
+      console.log('Container clicked, divToMoveId set to:', divToMoveId.current);
   }
   };
 
@@ -156,7 +155,7 @@ const addProcess = (id) => {
     addFunUnit(timestamp);
   };
 
-  function HandleClick1(funUnitId) {
+  function handleFunUnitClick(funUnitId) {
     const timestamp = Date.now();
     var processDivId = addProcess(timestamp);
     addConnection(funUnitId, processDivId);
@@ -180,7 +179,7 @@ const addProcess = (id) => {
             unit3={{ ...config3 }}
             buttonConfig={config4}
             onTextChange={handleUnitTextUpdate}
-            handleClickForRevealButton={HandleClick1} 
+            handleClickForRevealButton={handleFunUnitClick} 
     />
     </>
     )
@@ -188,7 +187,6 @@ const addProcess = (id) => {
 
   function svgRenderer() {
   const connectionsEntries = Array.from(connections.entries());
-    console.log('render: ' + connectionsEntries);
     var x=0
   return (
     <>
@@ -210,7 +208,6 @@ const addProcess = (id) => {
         );
       }
       )}
-      {console.log('all connections')}
     </>
   );
   }
@@ -244,7 +241,7 @@ const addProcess = (id) => {
             fu2buttonConfig={{...fu2.buttonId, visible: !checkIfConnectionExist(process.fu2Id)}}
             unit={{...u, placeholder: 'describe interaction \n and outcome of these two units'}}
             onTextChange={handleUnitTextUpdate} // Pass handler
-            handleClickForRevealButton={HandleClick1}
+            handleClickForRevealButton={handleFunUnitClick}
             handleContainerClick={handleContainerClick}
           />
         );
@@ -282,76 +279,9 @@ const addProcess = (id) => {
   return [x, y];
 };
 
-
-//   const getElementPageCoords = (elementId, anchor = 'top-left') => {
-//   const div = document.getElementById(elementId);
-//   if (!div) return null;
-
-//   const rect = div.getBoundingClientRect();
-
-//   // 1. Calculate base absolute page coordinates (Top-Left)
-//   let pageX = rect.left + window.scrollX; 
-//   let pageY = rect.top;  
-
-//   // 2. Adjust coordinates based on the requested anchor
-//   switch (anchor) {
-//     case 'top-center':
-//       pageX = pageX + (rect.width / 2); // Shift right to the horizontal middle
-//       // pageY stays at the top edge
-//       break;
-
-//     case 'bottom-center':
-//       pageX = pageX + (rect.width / 2); // Shift right to the horizontal middle
-//       pageY = pageY + rect.height;      // Shift down to the bottom edge
-//       break;
-
-//     case 'top-left':
-//     default:
-//       // Remains at the exact top-left corner
-//       break;
-//   }
-
-//   return [pageX, pageY];
-// };
-
-// const getElementPageCoords1 = (elementId) => {
-//   const div = document.getElementById(elementId);
-//   if (!div) return null;
-
-//   const rect = div.getBoundingClientRect();
-
-//   // 1. Calculate base absolute page coordinates (Top-Left)
-//   let pageX = rect.left + window.scrollX; 
-//   let pageY = rect.top + window.scrollY;  
-
-//   // 2. Adjust if bottom-center coordinates are requested
-//   if (anchor === 'bottom-center') {
-//     pageX = pageX + (rect.width / 2); // Shift right by half the width
-//     pageY = pageY + rect.height;      // Shift down by the full height
-//   }
-
-//   return [pageX, pageY];
-// };
-
-//   const getElementPageCoords = (elementId) => {
-//   const div = document.getElementById(elementId);
-//   if (!div) return null;
-
-//   const rect = div.getBoundingClientRect();
-
-//   // Match event.pageX exactly by adding horizontal scroll
-//   const pageX = rect.left + window.scrollX; 
-  
-//   // Match event.pageY exactly by adding vertical scroll
-//   const pageY = rect.top + window.scrollY;  
-
-//   return [pageX, pageY];
-// };
-
 //  FIX: Capitalize the component name and pass state down as clean props
 function SvgRenderer({ connections, points }) {
   const connectionsEntries = Array.from(connections.entries());
-  console.log('Rendering connections:', connectionsEntries);
   
   return (
     <>
@@ -360,7 +290,6 @@ function SvgRenderer({ connections, points }) {
         const p2 = points.get(value);
         
         // Log coordinates dynamically to verify they exist during state updates
-        console.log("Line Node Lookup:", { key, p1, value, p2 });
         
         if (!p1 || !p2) return null;
 
@@ -376,44 +305,32 @@ function SvgRenderer({ connections, points }) {
   );
 }
 
-
-    const handlePageClick = (event) => {
+    const handleCanvasClick = (event) => {
     // Only trigger if the empty space or border itself is clicked
     if (event.target === event.currentTarget) {
-        divMove(event.pageX,event.pageY);
-        updateFunUnitPositions(divToMoveId);
+      console.log('Canvas clicked, divToMoveId:', divToMoveId.current);
+      var x = event.pageX;
+      var y = event.pageY;
+              if (divToMoveId.current !== '') {
 
+        divMove(x,y);
+              
+        console.log('Moved div with id:', divToMoveId.current, 'to coordinates:', x, y);
+        updatePoint(divToMoveId.current, [x,y])
+        updateFunUnitPositions(divToMoveId.current);
+        console.log('Updated point for div with id:', divToMoveId.current, 'to new coordinates:', [x,y]);
+        divToMoveId.current = '';
+              }
     }
   };
-
-    useEffect(() => {
-    //console.log('State updated in real-time:', connections);
-    // Or clean tabular format:
-    // console.table(user);
-  }, [connections]); 
-
-      useEffect(() => {
-    //console.log('State updated in real-time:', points);
-    // Or clean tabular format:
-    // console.table(user);
-  }, [points]);
-
-    useEffect(() => {
-    console.log("Points state map changed!", points);
-        // updateFunUnitPositions(divToMoveId);
-            setRenderTrigger(prev => prev + 1);
-
-        divToMoveId = '';
-    // Call your layout rendering or coordinate calculation logic here
-  }, [points]); 
 
   return (
     <>
     {/* <p>+ Reveal organization of one more level deeper</p> */}
-    <div className="canvas-div" id="canvas" onClick={handlePageClick}>
+    <div className="canvas-div" id="canvas" onClick={handleCanvasClick}>
       {funUnitToExplore()}
       {processRenderer()}
-<SvgRenderer connections={connections} points={points} tracker={renderTrigger} />
+      <SvgRenderer connections={connections} points={points} tracker={renderTrigger} />
     </div>
     </>
   );

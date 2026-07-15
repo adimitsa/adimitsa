@@ -5,7 +5,6 @@ export default function SvgLine({ point1, point2 }) {
   // Destructure coordinates out of the two arrays
   const [x1, y1] = point1;
   const [x2, y2] = point2;
-    console.log(point1, point2);
   return (
     <svg 
      style={{
