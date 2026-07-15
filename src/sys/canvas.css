@@ -1,12 +1,12 @@
+/* 2. Setup your Canvas Universe container */
 .canvas-div {
-  position: relative; /* Anchors absolute items cleanly */
-  width: 100%;       /* Fills exact screen width */
-  height: 100vh;      /* Fills exact screen height */
+  position: relative; /* All inner components must anchor here */
+  width: 100vw;       /* Forces exact 100% viewport width */
+  height: 100vh;      /* Forces exact 100% viewport height */
   margin: 0;
   padding: 0;
-  overflow: hidden;   /* Disables all scrolling completely */
-  background-color: #e5e5e5; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;   /* Keeps absolute items contained */
+  background-color: #e5e5e5;
+  
+  /* Flexbox is optional now since child items will use absolute coordinates */
 }

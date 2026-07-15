@@ -19,7 +19,7 @@ export default function Sys() {
 
   const divToMoveId = useRef('');
 
-  const canvasDiv = document.getElementById('canvas');
+  const canvasId = 'canvas';
 
   const addUnit = (id) => {
     setUnits(prevMap => {
@@ -28,17 +28,12 @@ export default function Sys() {
       return nextMap;
     });
         return id;
-    }
+  }
 
       function divMove(x,y){
         var div = document.getElementById(divToMoveId.current);
-        // const rect = div.getBoundingClientRect();
         div.style.top = y + 'px';
         div.style.left = x + 'px';
-        
-
-        // canvasDiv.style.width = document.documentElement.scrollWidth + 'px';
-        //         canvasDiv.style.height = document.documentElement.scrollHeight + 'px';
     }
 
       function updateFunUnitPositions() {
@@ -161,7 +156,9 @@ const addProcess = (id) => {
     addConnection(funUnitId, processDivId);
     var div = document.getElementById(funUnitId);
       const rect = div.getBoundingClientRect();
+    requestAnimationFrame(() => {
     updatePoint(funUnitId, getElementPageCoords(funUnitId, 'bottom-center'));
+  });
   };
 
   function funUnitToExplore() {
@@ -252,13 +249,27 @@ const addProcess = (id) => {
 
   const getElementPageCoords = (elementId, anchor = 'top-left') => {
   const div = document.getElementById(elementId);
-  if (!div) return null;
+  const canvas = document.getElementById(canvasId);
+  
+  // Return null if either the element or the canvas universe doesn't exist
+  if (!div || !canvas) {
+    console.warn(`Element with id "${elementId}" or canvas with id "${canvasId}" not found.`);
+
+return null;
+  }
 
   const rect = div.getBoundingClientRect();
+  const canvasRect = canvas.getBoundingClientRect();
 
-  // 1. Coordinates are exactly where the element sits on screen
-  let x = rect.left; 
-  let y = rect.top;  
+  // 1. Subtract canvas bounds to get X/Y relative ONLY to the canvas top-left corner
+  let x = rect.left - canvasRect.left; 
+  let y = rect.top - canvasRect.top; 
+
+  // const rect = div.getBoundingClientRect();
+
+  // // 1. Coordinates are exactly where the element sits on screen
+  // let x = rect.left; 
+  // let y = rect.top;  
 
   // 2. Map coordinates instantly to targets
   switch (anchor) {
@@ -268,7 +279,7 @@ const addProcess = (id) => {
 
     case 'bottom-center':
       x = x + (rect.width / 2);
-      y = y; // Snaps exactly to the bottom pixel edge
+      y = y + rect.height; // Snaps exactly to the bottom pixel edge
       break;
 
     case 'top-left':
@@ -308,15 +319,23 @@ function SvgRenderer({ connections, points }) {
     const handleCanvasClick = (event) => {
     // Only trigger if the empty space or border itself is clicked
     if (event.target === event.currentTarget) {
+      // var x = event.pageX;
+      // var y = event.pageY;
+      // 1. Get the bounding box of your canvas element
+const rect = event.currentTarget.getBoundingClientRect();
+
+// 2. Subtract the canvas edge offsets from the viewport mouse coordinates
+const x = event.clientX - rect.left;
+const y = event.clientY - rect.top;
+
+      console.log('Canvas click coordinates:', x, y);
       console.log('Canvas clicked, divToMoveId:', divToMoveId.current);
-      var x = event.pageX;
-      var y = event.pageY;
-              if (divToMoveId.current !== '') {
+      if (divToMoveId.current !== '') {
 
         divMove(x,y);
               
         console.log('Moved div with id:', divToMoveId.current, 'to coordinates:', x, y);
-        updatePoint(divToMoveId.current, [x,y])
+        updatePoint(divToMoveId.current, getElementPageCoords(divToMoveId.current, 'top-center'));
         updateFunUnitPositions(divToMoveId.current);
         console.log('Updated point for div with id:', divToMoveId.current, 'to new coordinates:', [x,y]);
         divToMoveId.current = '';
