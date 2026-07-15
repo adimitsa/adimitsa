@@ -1,13 +1,13 @@
 .textarea {
     box-sizing: border-box;
     overflow: hidden;
-    height: 50px;
-    min-width: 50px;
+    height: 20px;
+    /* min-width: 8px; */
     resize: none;
-    padding-right: 15px;
+    padding-right: 1px;
     direction: ltr;
     white-space: nowrap;
-    margin-bottom: 10px; /* Leaves clean clearing space for the absolute plus button below */
+    margin-bottom: 1px; /* Leaves clean clearing space for the absolute plus button below */
 }
 
 /* Style the placeholder directly on the textarea */

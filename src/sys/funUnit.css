@@ -1,9 +1,20 @@
 .funUnit {
     display: inline-flex;
     flex-direction: column;
-    border: 1px solid #9ab3a6;
-    border-radius: 4px;
+    border: 3px solid #4fc588;
+    border-radius: 10px;
     padding: 4px;
     background: #fff;
-    width: 300px;
+    
+    /* CHANGE: Sets a starting width, but allows expansion */
+    min-width: max-content; 
+    width: max-content; 
+}
+/* NEW Modifier: Targets only your specific top-center element */
+.unit-system-funUnit {
+    position: absolute;
+    top: 20px;                     /* Pins it near the top screen edge */
+    left: 50%;                    /* Positions origin at the horizontal middle */
+    transform: translateX(-50%);  /* Shifts it left by half its width for perfect centering */
+    margin: 0;
 }

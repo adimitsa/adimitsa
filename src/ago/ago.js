@@ -11,6 +11,9 @@ let dynamicFlowData = [
 document.addEventListener('input', function(event) {
     const el = event.target;
     if (el.tagName === 'TEXTAREA') {
+        const position = el.getBoundingClientRect();
+        console.log(`X coordinate: ${position.left}px`);
+        console.log(`Y coordinate: ${position.top}px`);
         const itemId = Number(el.dataset.id);
         const itemIndex = dynamicFlowData.findIndex(item => item.id === itemId);
         
