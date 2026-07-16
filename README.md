@@ -22,32 +22,6 @@ npm run dev
 # to run hosted version
 [adimitsa.com](https://main.d11tkx9jh7h0o5.amplifyapp.com/)
 
-# list of todos
-1. add animation to ago to look like a stair case
-2. inorder animation  should happen too, should look like climbing the step
-3. add rest of principles and processes
-4. help card should appear perhaps as tooltip?
-5. explore react html elements to get ideas on how to represent tooltips
-6. whats happening current situational awareness setup should have a global input for all other tools
-7. add other tools for cort1
--add ui map
--use sys design to jot down react system
-
-
-for system tools:
--use ago to jot down ideas
--start implementing those ideas one by one
-
-
-for homepage:
-- use ago tool to jot down ideas
--start implementing those ideas one by one
-
-process:
--use ago tool to jot down all ideas as end goals
-- use existing sys analysing to map the react components
-- start implementing
-
 bugs:
 1. when switchig between tools, only principles processes text is loaded, flow is not
 

@@ -76,12 +76,12 @@ export default function Sys() {
 
       function updateFunUnitPositions() {
         var processId = String(divToMoveId.current);
-        console.log('Updating positions for processId:', processId);
+        // console.log('Updating positions for processId:', processId);
         if (processId === '') {
           return;
         }
         var processItem = processes.get(String(processId));
-        console.log('Updating positions for process:', processItem);
+        // console.log('Updating positions for process:', processItem);
         var fu1Id = processItem.fu1Id;
         var fu2Id = processItem.fu2Id;
         
@@ -105,7 +105,7 @@ const addConnection = (key, value) => {
 };
 
   const updatePoint = (key, newValue) => {
-    console.log('updating point ' + key + ':', newValue);
+    // console.log('updating point ' + key + ':', newValue);
   setPoints(prevPoints => {
     // 1. Create a new Map instance copying the old entries
     const newMap = new Map(prevPoints);
@@ -167,7 +167,7 @@ const addProcess = (id) => {
     if (event.target === event.currentTarget) {
       const id = event.currentTarget.id;
       divToMoveId.current = String(id);
-      console.log('Container clicked, divToMoveId set to:', divToMoveId.current);
+      // console.log('Container clicked, divToMoveId set to:', divToMoveId.current);
   }
   };
 
@@ -180,7 +180,7 @@ function displayFunUnit(parentId) {
   // 1. Look up directly using the passed parentId string
   const fu = funUnits.get(String(parentId));
   
-  console.log('Displaying FunUnit with parentId:', parentId, 'FunUnit data:', fu);
+  // console.log('Displaying FunUnit with parentId:', parentId, 'FunUnit data:', fu);
   
   // 2. Safety check: return null instead of crashing if not found yet
   if (!fu) {
@@ -195,7 +195,7 @@ function displayFunUnit(parentId) {
   
   // Deduce the original base ID for child component usage if needed (parentId - 4)
   const baseFunUnitId = String(parentId);
-  console.log('Base FunUnit ID for parentId', parentId, 'is:', baseFunUnitId);
+  // console.log('Base FunUnit ID for parentId', parentId, 'is:', baseFunUnitId);
   
   // 4. Determine button visibility based on connection existence
 
@@ -204,8 +204,8 @@ function displayFunUnit(parentId) {
     visible: !checkIfConnectionExist(baseFunUnitId) 
   };
 
-  console.log('Button config for FunUnit with parentId', parentId, ':', buttonConfig);
-  console.log(connections);
+  // console.log('Button config for FunUnit with parentId', parentId, ':', buttonConfig);
+  // console.log(connections);
 
   return (
     <FunUnit
@@ -286,8 +286,8 @@ function displayFunUnit(parentId) {
   function notesRenderer() {
     return (
       <>
-      <div class="legend-overlay">
-  <p>+ = Reveal organization of one more level deeper</p>
+      <div className="legend-overlay">
+  <p>+ = Reveal organization of one level deeper</p>
 </div>
       </>
     )
@@ -319,7 +319,7 @@ function displayFunUnit(parentId) {
             fu2unit2={{...fu2unit2, placeholder: 'use2' }}
             fu2unit3={{...fu2unit3, placeholder: 'process2'}}
             fu2buttonConfig={{...fu2.buttonId, visible: !checkIfConnectionExist(process.fu2Id)}}
-            unit={{...u, placeholder: 'describe interaction \n and outcome of these two units'}}
+            unit={{...u, placeholder: 'relationship\ninteraction\noutcome \n of these two units'}}
             onTextChange={handleUnitTextUpdate} // Pass handler
             handleClickForRevealButton={handleFunUnitClick}
             handleContainerClick={handleContainerClick}
@@ -411,16 +411,16 @@ const rect = event.currentTarget.getBoundingClientRect();
 const x = event.clientX - rect.left;
 const y = event.clientY - rect.top;
 
-      console.log('Canvas click coordinates:', x, y);
-      console.log('Canvas clicked, divToMoveId:', divToMoveId.current);
+      // console.log('Canvas click coordinates:', x, y);
+      // console.log('Canvas clicked, divToMoveId:', divToMoveId.current);
       if (divToMoveId.current !== '') {
 
         divMove(x,y);
               
-        console.log('Moved div with id:', divToMoveId.current, 'to coordinates:', x, y);
+        // console.log('Moved div with id:', divToMoveId.current, 'to coordinates:', x, y);
         updatePoint(divToMoveId.current, getElementPageCoords(divToMoveId.current, 'top-center'));
         updateFunUnitPositions(divToMoveId.current);
-        console.log('Updated point for div with id:', divToMoveId.current, 'to new coordinates:', [x,y]);
+        // console.log('Updated point for div with id:', divToMoveId.current, 'to new coordinates:', [x,y]);
         divToMoveId.current = '';
               }
     }

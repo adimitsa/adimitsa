@@ -1,4 +1,6 @@
 .reveal-more-button {
   width: fit-content; /* Default browser behavior */
   align-self: center;
+    border: none;
+
 }
