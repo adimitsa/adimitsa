@@ -4,14 +4,52 @@ import Unit from './unit';
 import Process from './process';
 import './canvas.css';
 import SvgLine from './svgLine';
+import './notes.css';
+
+
+const FIRST_UNIT_ID = 1000; // Replace with your true starter ID variable
+const FIRST_FUN_UNIT_ID = 1004; // Replace with your true starter ID variable
+
+// Create the global configurations completely outside of React
+const initialUnitsMap = new Map();
+const initialFunUnitsMap = new Map();
+
+function buildInitialStateStructures(baseId) {
+  const baseTime = baseId; 
+  const u1Id = String(baseTime);
+  const u2Id = String(baseTime + 1);
+  const u3Id = String(baseTime + 2);
+  const buttonId = String(baseTime + 3);
+  const parentId = String(baseTime + 4);
+
+  // Pre-seed the sub-units map structure
+  initialUnitsMap.set(u1Id, { id: u1Id, placeholder: 'unit', value: '' });
+  initialUnitsMap.set(u2Id, { id: u2Id, placeholder: 'use', value: '' });
+  initialUnitsMap.set(u3Id, { id: u3Id, placeholder: 'process', value: '' });
+
+  // Pre-seed the parent configuration map structure
+  initialFunUnitsMap.set(parentId, { 
+    id: parentId, 
+    unit1Id: u1Id, 
+    unit2Id: u2Id, 
+    unit3Id: u3Id, 
+    buttonId: buttonId
+  });
+}
+
+// EXECUTE IMMEDIATELY: This runs before React mounts or renders anything!
+buildInitialStateStructures(FIRST_UNIT_ID);
 
 export default function Sys() {
-  const [units, setUnits] = useState(new Map());
   const [system, setsystem] = useState('');
   const [fun, setfun] = useState('');
   const [process, setprocess] = useState('');
 
-  const [funUnits, setFunUnits] = useState(new Map());
+
+  const [units, setUnits] = useState(initialUnitsMap);
+  const [funUnits, setFunUnits] = useState(initialFunUnitsMap);
+
+  
   const [processes , setProcesses] = useState(new Map());
   const [connections, setConnections] = useState(new Map());
   const [points, setPoints] = useState(new Map());
@@ -115,23 +153,12 @@ const addProcess = (id) => {
 
   // Shared updater passed down to handle input updates cleanly
   const handleUnitTextUpdate = (targetId, currentText) => {
-    if (targetId === 'system') {
-        setsystem(currentText);
-    }
-    else if (targetId === 'function') {
-        setfun(currentText);
-    }
-    else if (targetId === 'process') {
-        setprocess(currentText);
-    }
-    else {
         setUnits(prevMap => {
         if (!prevMap.has(targetId)) return prevMap;
         const nextMap = new Map(prevMap);
         nextMap.set(targetId, { id: targetId, value: currentText });
         return nextMap;
     });
-    }
   };
 
 
@@ -144,11 +171,58 @@ const addProcess = (id) => {
   }
   };
 
-
   function HandleClick() {
     const timestamp = Date.now();
     addFunUnit(timestamp);
   };
+
+function displayFunUnit(parentId) {
+  // 1. Look up directly using the passed parentId string
+  const fu = funUnits.get(String(parentId));
+  
+  console.log('Displaying FunUnit with parentId:', parentId, 'FunUnit data:', fu);
+  
+  // 2. Safety check: return null instead of crashing if not found yet
+  if (!fu) {
+    console.warn(`FunUnit with parentId "${parentId}" not found.`);
+    return null;
+  }
+
+  // 3. Look up your sub-units from your units Map (with safe object fallbacks)
+  const unit1 = units.get(fu.unit1Id) || {};
+  const unit2 = units.get(fu.unit2Id) || {};
+  const unit3 = units.get(fu.unit3Id) || {};
+  
+  // Deduce the original base ID for child component usage if needed (parentId - 4)
+  const baseFunUnitId = String(parentId);
+  console.log('Base FunUnit ID for parentId', parentId, 'is:', baseFunUnitId);
+  
+  // 4. Determine button visibility based on connection existence
+
+  const buttonConfig = { 
+    id: fu.buttonId, 
+    visible: !checkIfConnectionExist(baseFunUnitId) 
+  };
+
+  console.log('Button config for FunUnit with parentId', parentId, ':', buttonConfig);
+  console.log(connections);
+
+  return (
+    <FunUnit
+      className="unit-system-funUnit"
+      key={parentId} // Track by parentId for stable React reconciliation
+      id={baseFunUnitId}
+      unit1={{ ...unit1, placeholder: 'unit' }}
+      unit2={{ ...unit2, placeholder: 'use' }}
+      unit3={{ ...unit3, placeholder: 'process' }}
+      buttonConfig={buttonConfig}
+      onTextChange={handleUnitTextUpdate}
+      handleClickForRevealButton={handleFunUnitClick}
+    />
+  );
+}
+
+
 
   function handleFunUnitClick(funUnitId) {
     const timestamp = Date.now();
@@ -209,6 +283,15 @@ const addProcess = (id) => {
   );
   }
 
+  function notesRenderer() {
+    return (
+      <>
+      <div class="legend-overlay">
+  <p>+ = Reveal organization of one more level deeper</p>
+</div>
+      </>
+    )
+  }
   function processRenderer() {
     return (
       <>
@@ -343,12 +426,24 @@ const y = event.clientY - rect.top;
     }
   };
 
+  // useEffect(() => {
+  //   //createFirstFunUnit();
+  //   console.log('First FunUnit created with id:', FIRST_FUN_UNIT_ID);
+  //   console.log('Initial funUnits state:', funUnits);
+  //   console.log('Initial processes state:', processes);
+  //   console.log('Initial connections state:', connections);
+  //   console.log('Initial points state:', points);
+  //   console.log('Initial units state:', units);
+  // }, [connections, funUnits, processes, points, units]);
+
   return (
     <>
     {/* <p>+ Reveal organization of one more level deeper</p> */}
     <div className="canvas-div" id="canvas" onClick={handleCanvasClick}>
-      {funUnitToExplore()}
+    {notesRenderer()}
+      {displayFunUnit(FIRST_FUN_UNIT_ID)}
       {processRenderer()}
+
       <SvgRenderer connections={connections} points={points} tracker={renderTrigger} />
     </div>
     </>

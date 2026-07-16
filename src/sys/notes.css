@@ -1,0 +1,35 @@
+.legend-overlay {
+  /* 1. Positioning */
+  position: absolute; 
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+
+  /* 2. Transparency & Minimal Structure */
+  background-color: rgba(230, 183, 183, 0.15); /* Light glass tint */
+  backdrop-filter: blur(8px);                  /* Smooths background shapes */
+  border-radius: 4px;
+  padding: 8px 12px;
+  
+  /* 3. Sizing Constraints */
+  box-sizing: border-box;
+  width: max-content; /* Hugs the longest paragraph tightly */
+
+    -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE10+/Edge (Legacy) */
+  user-select: none;         /* Standard syntax (Chrome, Edge, Opera) */
+}
+
+/* Clear default browser margins from paragraphs inside the legend */
+.legend-overlay p {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #a17878;
+}
+
+/* Removes the bottom margin from the very last paragraph so padding stays even */
+.legend-overlay p:last-child {
+  margin-bottom: 0;
+}

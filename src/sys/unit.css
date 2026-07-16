@@ -1,18 +1,24 @@
 .textarea {
     box-sizing: border-box;
     overflow: hidden;
-    height: 20px;
+    /* 1. REMOVE height: 20px; so it can shrink-to-fit */
+    /* height: 20px; */ 
+    
+    /* 2. ADD field-sizing to fit the placeholder size */
+    field-sizing: content;
+        width: max-content; 
+    
     /* min-width: 8px; */
     resize: none;
     padding-right: 1px;
     direction: ltr;
     white-space: nowrap;
-    margin-bottom: 1px; /* Leaves clean clearing space for the absolute plus button below */
+    margin-bottom: 1px; 
 }
 
 /* Style the placeholder directly on the textarea */
 .textarea::placeholder {
-  color: #888888 !important;   /* Clean, professional dark gray */
-  opacity: 0.7 !important;      /* Standard soft placeholder transparency */
+  color: #888888 !important;   
+  opacity: 0.7 !important;      
   visibility: visible !important;
 }
