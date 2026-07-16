@@ -1,11 +1,20 @@
 .auto-resize-textarea {
     box-sizing: border-box;
     overflow: hidden;
-    height: 50px;
-    min-width: 50px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    height: 100px;
+    min-width: 500px;
     resize: none;
-    padding-right: 15px;
+    padding: 10px 15px 10px 10px; /* Added top/left padding for visual alignment */
     direction: ltr;
     white-space: nowrap;
     margin-bottom: 10px; /* Leaves clean clearing space for the absolute plus button below */
+}
+
+/* Style the placeholder directly on the textarea */
+.auto-resize-textarea::placeholder {
+  color: #8a7272 !important;   
+  opacity: 0.7 !important;      
+  visibility: visible !important;
 }

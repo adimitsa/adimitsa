@@ -4,16 +4,14 @@ const TITLE_SITUATION = "describe current situation: ";
 const TITLE_PREFIX_OBJECTIVE = "Objective ";
 
 let dynamicFlowData = [
-    { id: Date.now() + 1, textareaVal: TITLE_GOAL, width: '50px', height: '50px' },
-    { id: Date.now() + 2, textareaVal: TITLE_SITUATION, width: '50px', height: '50px' }
+    { id: Date.now() + 1, textareaVal: TITLE_GOAL, width: '50px', height: '50px', placeholder: "describe the state/goal/effect you want to end up with" },
+    { id: Date.now() + 2, textareaVal: TITLE_SITUATION, width: '50px', height: '50px'}
 ];
 
 document.addEventListener('input', function(event) {
     const el = event.target;
     if (el.tagName === 'TEXTAREA') {
         const position = el.getBoundingClientRect();
-        console.log(`X coordinate: ${position.left}px`);
-        console.log(`Y coordinate: ${position.top}px`);
         const itemId = Number(el.dataset.id);
         const itemIndex = dynamicFlowData.findIndex(item => item.id === itemId);
         
@@ -89,11 +87,27 @@ function getExpectedTitle(itemIndex) {
 function createTextArea(item) {
     let textarea = document.createElement('textarea');
     textarea.className = 'auto-resize-textarea';
-    textarea.value = item.textareaVal;
+            textarea.value = item.textareaVal;
+
+    // // FIX: Only set value if it is a valid, non-empty string. 
+    // // Otherwise, leave it blank so the placeholder triggers.
+    // var rawInput = item.textareaVal.replace(/^(describe goal:|describe current situation:|Objective \d+:)/, "").trimStart();
+    // console.log(`Creating textarea for item with id: ${item.id}. Raw input: "${rawInput}"`);
+    // if (rawInput !== "") {
+    // } else {
+    //     textarea.value = ""; // Ensure value is empty to trigger placeholder
+    // }
+    
     textarea.dataset.id = item.id; 
     textarea.style.width = item.width;
     textarea.style.height = item.height;
-    return textarea
+    
+    // Fallback placeholder logic
+    textarea.placeholder = item?.placeholder || "Inorder to achive the above objective, what needs to be done?";
+    
+    console.log(`Created textarea with id: ${item.id}, width: ${item.width}, height: ${item.height} and placeholder: ${textarea.placeholder}`);
+    
+    return textarea;
 }
 
 function createObjectWrapper() {
