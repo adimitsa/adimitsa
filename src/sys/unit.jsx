@@ -6,6 +6,7 @@ export default function Unit(props) {
     const el = e.target;
     var w = 1+'ch';
     console.log('Textarea with id ' + props.id + ' changed. New value:', el.value);
+    console.log('Placeholder for textarea with id ' + props.placeholder);
     const isLastCharSpace = el.value.endsWith(' ');
     if (isLastCharSpace) {
       if (props.wordLimit === '1') {
@@ -14,7 +15,8 @@ export default function Unit(props) {
       }
     }
   if (el.value === undefined || el.value === null || el.value === '') {
-    var wp = Math.max(...props.placeholder.split('\n').map(line => line.length))+2; // Add extra space for the longest line
+    var plc = props.placeholder;
+    var wp = Math.max(plc.split('\n').map(line => line.length))+2; // Add extra space for the longest line
     w = wp+ 'ch'; // Add extra space for placeholder
   } else {
     w = Math.max(...el.value.split('\n').map(line => line.length))+2 + 'ch'; // Add extra space for the longest line
@@ -27,8 +29,6 @@ export default function Unit(props) {
     
     // Bubble the data smoothly back up to the state Map
     props.onTextChange(props.id, el.value);
-
-
   };
 
   return (

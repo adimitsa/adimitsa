@@ -25,3 +25,17 @@ npm run dev
 bugs:
 1. when switchig between tools, only principles processes text is loaded, flow is not
 
+
+Use information revealed so far to predict systems behaviour in your situation:
+
+-limitations
+-capacity
+-boundaries
+-rules
+-constraints
+-function vs use
+-process vs action
+
+caf:
+connections associations
+what have you left out?

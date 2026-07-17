@@ -23,9 +23,9 @@ function buildInitialStateStructures(baseId) {
   const parentId = String(baseTime + 4);
 
   // Pre-seed the sub-units map structure
-  initialUnitsMap.set(u1Id, { id: u1Id, placeholder: 'unit', value: '' });
-  initialUnitsMap.set(u2Id, { id: u2Id, placeholder: 'use', value: '' });
-  initialUnitsMap.set(u3Id, { id: u3Id, placeholder: 'process', value: '' });
+  initialUnitsMap.set(u1Id, { id: u1Id, value: '' });
+  initialUnitsMap.set(u2Id, { id: u2Id, value: '' });
+  initialUnitsMap.set(u3Id, { id: u3Id, value: '' });
 
   // Pre-seed the parent configuration map structure
   initialFunUnitsMap.set(parentId, { 
@@ -179,42 +179,30 @@ const addProcess = (id) => {
 function displayFunUnit(parentId) {
   // 1. Look up directly using the passed parentId string
   const fu = funUnits.get(String(parentId));
-  
-  // console.log('Displaying FunUnit with parentId:', parentId, 'FunUnit data:', fu);
-  
-  // 2. Safety check: return null instead of crashing if not found yet
   if (!fu) {
     console.warn(`FunUnit with parentId "${parentId}" not found.`);
     return null;
   }
 
-  // 3. Look up your sub-units from your units Map (with safe object fallbacks)
   const unit1 = units.get(fu.unit1Id) || {};
   const unit2 = units.get(fu.unit2Id) || {};
   const unit3 = units.get(fu.unit3Id) || {};
-  
-  // Deduce the original base ID for child component usage if needed (parentId - 4)
+  console.log('Sub-units for FunUnit with parentId', parentId, ':', unit1, unit2, unit3);
   const baseFunUnitId = String(parentId);
-  // console.log('Base FunUnit ID for parentId', parentId, 'is:', baseFunUnitId);
-  
-  // 4. Determine button visibility based on connection existence
 
   const buttonConfig = { 
     id: fu.buttonId, 
     visible: !checkIfConnectionExist(baseFunUnitId) 
   };
 
-  // console.log('Button config for FunUnit with parentId', parentId, ':', buttonConfig);
-  // console.log(connections);
-
   return (
     <FunUnit
       className="unit-system-funUnit"
       key={parentId} // Track by parentId for stable React reconciliation
       id={baseFunUnitId}
-      unit1={{ ...unit1, placeholder: 'unit' }}
-      unit2={{ ...unit2, placeholder: 'use' }}
-      unit3={{ ...unit3, placeholder: 'process' }}
+      unit1={{...units.get(fu.unit1Id), placeholder: 'functional-complex-system-name'}}
+      unit2={{...units.get(fu.unit2Id), placeholder: 'use of functional-complex-system-name'}}
+      unit3={{...units.get(fu.unit3Id), placeholder: 'process-name-to-carry-out-above-function'}}
       buttonConfig={buttonConfig}
       onTextChange={handleUnitTextUpdate}
       handleClickForRevealButton={handleFunUnitClick}
@@ -234,27 +222,6 @@ function displayFunUnit(parentId) {
     updatePoint(funUnitId, getElementPageCoords(funUnitId, 'bottom-center'));
   });
   };
-
-  function funUnitToExplore() {
-  const config1 = { id: 'system', value: system, placeholder: 'unit' };
-  const config2 = { id: 'function', value: fun, placeholder: 'use' };
-  const config3 = { id: 'process', value: process, placeholder: 'process' };
-  const config4 = { id: 'button', visible: !checkIfConnectionExist('unit-system')};
-    return (
-      <>
-          <FunUnit 
-            key='unit-system'
-            id='unit-system'
-            unit1={{ ...config1 }} 
-            unit2={{ ...config2 }}
-            unit3={{ ...config3 }}
-            buttonConfig={config4}
-            onTextChange={handleUnitTextUpdate}
-            handleClickForRevealButton={handleFunUnitClick} 
-    />
-    </>
-    )
-  }
 
   function svgRenderer() {
   const connectionsEntries = Array.from(connections.entries());
@@ -288,6 +255,14 @@ function displayFunUnit(parentId) {
       <>
       <div className="legend-overlay">
   <p>+ = Reveal organization of one level deeper</p>
+  <p> Process = A series of actions taken to achieve a particular end.</p>
+  <p> Unit = A single entity within focus</p>
+  <p> Use = The function of the unit in the context of your situation</p>
+  <p>How would you use this system in your situation?</p>
+  <p>Any purpose of the knowledge of the system is derived from these basic principles:</p>
+  <p>1. Know what the system is not</p>
+  <p>2. Know the limitations of the system to make deliberate adjustments. </p>
+  <p>3. Use the system to achieve some end.</p>
 </div>
       </>
     )
@@ -311,15 +286,15 @@ function displayFunUnit(parentId) {
             id={process.id}
             fu1Id={process.fu1Id}
             fu2Id={process.fu2Id}
-            fu1unit1={{...fu1unit1, placeholder: 'unit1'}}
-            fu1unit2={{...fu1unit2, placeholder: 'use1'}}
-            fu1unit3={{...fu1unit3, placeholder: 'process1'}}
+            fu1unit1={{...fu1unit1, placeholder: 'functional-simple-unit1'}}
+            fu1unit2={{...fu1unit2, placeholder: 'use of simple unit1'}}
+            fu1unit3={{...fu1unit3, placeholder: 'process-name-to-carry-out-above-function'}}
             fu1buttonConfig={{...fu1.buttonId, visible: !checkIfConnectionExist(process.fu1Id)}}
-            fu2unit1={{...fu2unit1, placeholder: 'unit2'}}
-            fu2unit2={{...fu2unit2, placeholder: 'use2' }}
-            fu2unit3={{...fu2unit3, placeholder: 'process2'}}
+            fu2unit1={{...fu2unit1, placeholder: 'functional-simple-unit2'}}
+            fu2unit2={{...fu2unit2, placeholder: 'use of simple unit2' }}
+            fu2unit3={{...fu2unit3, placeholder: 'process-name-to-carry-out-above-function'}}
             fu2buttonConfig={{...fu2.buttonId, visible: !checkIfConnectionExist(process.fu2Id)}}
-            unit={{...u, placeholder: 'relationship\ninteraction\noutcome \n of these two units'}}
+            unit={{...u, placeholder: 'relationship between units\ninteraction of two processes\nstable state (outcome) achieved'}}
             onTextChange={handleUnitTextUpdate} // Pass handler
             handleClickForRevealButton={handleFunUnitClick}
             handleContainerClick={handleContainerClick}
@@ -348,13 +323,6 @@ return null;
   let x = rect.left - canvasRect.left; 
   let y = rect.top - canvasRect.top; 
 
-  // const rect = div.getBoundingClientRect();
-
-  // // 1. Coordinates are exactly where the element sits on screen
-  // let x = rect.left; 
-  // let y = rect.top;  
-
-  // 2. Map coordinates instantly to targets
   switch (anchor) {
     case 'top-center':
       x = x + (rect.width / 2);
@@ -426,21 +394,10 @@ const y = event.clientY - rect.top;
     }
   };
 
-  // useEffect(() => {
-  //   //createFirstFunUnit();
-  //   console.log('First FunUnit created with id:', FIRST_FUN_UNIT_ID);
-  //   console.log('Initial funUnits state:', funUnits);
-  //   console.log('Initial processes state:', processes);
-  //   console.log('Initial connections state:', connections);
-  //   console.log('Initial points state:', points);
-  //   console.log('Initial units state:', units);
-  // }, [connections, funUnits, processes, points, units]);
-
   return (
     <>
-    {/* <p>+ Reveal organization of one more level deeper</p> */}
     <div className="canvas-div" id="canvas" onClick={handleCanvasClick}>
-    {notesRenderer()}
+      {notesRenderer()}
       {displayFunUnit(FIRST_FUN_UNIT_ID)}
       {processRenderer()}
 

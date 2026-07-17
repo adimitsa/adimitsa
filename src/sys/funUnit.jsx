@@ -5,7 +5,7 @@ import './funUnit.css';
 
 export default function FunUnit(props) {
     const combinedClasses = `funUnit ${props.className || ''}`.trim();
-
+    console.log(props);
   return (
     <div className={combinedClasses} id={props.id}>
       <Unit id={props.unit1.id} value={props.unit1.value} onTextChange={props.onTextChange} placeholder={props.unit1.placeholder} wordLimit='1' />
