@@ -1,0 +1,48 @@
+.tool-card {
+  width: 100px;
+  height: 100px;
+
+  position: relative;
+  overflow: hidden;
+
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tool-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.tool-card-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  display: block;
+}
+
+.tool-card-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  margin: 0;
+  padding: 4px 2px;
+
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
