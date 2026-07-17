@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import ToolCard from "./ToolCard";
 import UserInput from "./UserInput";
+import MindingButton from "./MindingButton";
+
 
 import "../styles/homepage.css";
 
