@@ -37,11 +37,14 @@
   box-sizing: border-box;
 
   overflow: hidden;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+
 }
 
 .tool-cards-container.disabled {
+  opacity: 0.35;
+  filter: blur(2px);
   pointer-events: none;
-  opacity: 0.1;
 }
 
 

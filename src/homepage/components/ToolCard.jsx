@@ -2,6 +2,10 @@ import "../styles/toolCard.css";
 
 export default function ToolCard({ props }) {
   const openTool = () => {
+    if (props.onToolClick) {
+      props.onToolClick();
+    }
+
     window.open(
       `${window.location.origin}${props.route}`,
       "_blank",
